@@ -65,3 +65,25 @@ class LeadRepository:
             ).fetchone()
 
         return int(row["total"])
+
+
+    def list_all(self) -> list[Lead]:
+        with self._connect() as connection:
+            rows = connection.execute(
+            """
+            SELECT company, website, industry, country, status
+            FROM leads
+            ORDER BY created_at DESC
+            """
+        ).fetchall()
+
+        return [
+        Lead(
+            company=row["company"],
+            website=row["website"],
+            industry=row["industry"],
+            country=row["country"],
+            status=row["status"],
+        )
+        for row in rows
+    ]
