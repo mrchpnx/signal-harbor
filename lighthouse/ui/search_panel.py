@@ -5,8 +5,8 @@ from config.settings import BACKGROUND
 
 
 class SearchPanel:
-
-    def __init__(self, parent):
+    def __init__(self, parent, on_search):
+        self.on_search = on_search
 
         self.frame = tk.LabelFrame(
             parent,
@@ -16,45 +16,25 @@ class SearchPanel:
             pady=15,
         )
 
-        tk.Label(
-            self.frame,
-            text="Niche",
-            bg=BACKGROUND,
-        ).grid(row=0, column=0, sticky="w")
-
-        self.niche = ttk.Entry(
-            self.frame,
-            width=30,
+        tk.Label(self.frame, text="Niche", bg=BACKGROUND).grid(
+            row=0, column=0, sticky="w"
         )
 
-        self.niche.grid(
-            row=1,
-            column=0,
-            padx=(0, 20),
+        self.niche = ttk.Entry(self.frame, width=30)
+        self.niche.insert(0, "Shopify beauty brands")
+        self.niche.grid(row=1, column=0, padx=(0, 20))
+
+        tk.Label(self.frame, text="Country", bg=BACKGROUND).grid(
+            row=0, column=1, sticky="w"
         )
 
-        tk.Label(
-            self.frame,
-            text="Country",
-            bg=BACKGROUND,
-        ).grid(row=0, column=1, sticky="w")
+        self.country = ttk.Entry(self.frame, width=25)
+        self.country.insert(0, "United States")
+        self.country.grid(row=1, column=1, padx=(0, 20))
 
-        self.country = ttk.Entry(
-            self.frame,
-            width=25,
+        tk.Label(self.frame, text="Lead Count", bg=BACKGROUND).grid(
+            row=0, column=2, sticky="w"
         )
-
-        self.country.grid(
-            row=1,
-            column=1,
-            padx=(0, 20),
-        )
-
-        tk.Label(
-            self.frame,
-            text="Lead Count",
-            bg=BACKGROUND,
-        ).grid(row=0, column=2, sticky="w")
 
         self.count = ttk.Spinbox(
             self.frame,
@@ -62,21 +42,30 @@ class SearchPanel:
             to=100,
             width=8,
         )
-
         self.count.set(20)
+        self.count.grid(row=1, column=2, padx=(0, 20))
 
-        self.count.grid(
-            row=1,
-            column=2,
-            padx=(0, 20),
-        )
-
-        ttk.Button(
+        self.search_button = ttk.Button(
             self.frame,
             text="Run Search",
-        ).grid(
-            row=1,
-            column=3,
+            command=self._run_search,
+        )
+        self.search_button.grid(row=1, column=3)
+
+    def _run_search(self):
+        niche = self.niche.get().strip()
+        country = self.country.get().strip()
+
+        try:
+            limit = int(self.count.get())
+        except ValueError:
+            limit = 20
+
+        self.on_search(niche, country, limit)
+
+    def set_busy(self, busy: bool):
+        self.search_button.configure(
+            state="disabled" if busy else "normal"
         )
 
     def pack(self, **kwargs):
