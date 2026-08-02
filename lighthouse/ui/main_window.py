@@ -1,7 +1,9 @@
 import tkinter as tk
 
 from config.settings import *
+from ui.dashboard_cards import DashboardCards
 from ui.lead_table import LeadTable
+from ui.search_panel import SearchPanel
 
 
 class MainWindow:
@@ -46,17 +48,21 @@ class MainWindow:
             pady=24,
         )
 
+        search_panel = SearchPanel(body)
+        search_panel.pack(
+            fill="x",
+            pady=(0, 16),
+        )
+
         total = self.repository.count()
 
-        tk.Label(
+        dashboard = DashboardCards(
             body,
-            text=f"Total Leads: {total}",
-            bg=BACKGROUND,
-            fg=TEXT,
-            font=("Segoe UI", 20, "bold"),
-        ).pack(
-            anchor="w",
-            pady=(0, 20),
+            total_leads=total,
+        )
+        dashboard.pack(
+            fill="x",
+            pady=(0, 16),
         )
 
         leads = self.repository.list_all()
